@@ -1,0 +1,27 @@
+{
+  "name": "madiee_games",
+  "version": "1.0.0",
+  "description": "Live Tic Tac Toe",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"nodemon server/server.js\" \"npm start --prefix client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anand-yadav55/tictactoe.git"
+  },
+  "author": "Anand Yadav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anand-yadav55/tictactoe/issues"
+  },
+  "homepage": "https://github.com/anand-yadav55/tictactoe#readme",
+  "dependencies": {
+    "concurrently": "^6.2.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.7",
+    "nodemon": "^2.0.12",
+    "socket.io": "^4.2.0"
+  }
+}
