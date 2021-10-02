@@ -1,28 +1,42 @@
-import io from 'socket.io-client';
 import { useEffect, useState } from 'react';
 import '../board.css';
 import { useParams } from 'react-router';
 import Loading from './Loading';
 
-function createBoard() {
-  let table = [];
+import { socket } from '../service/socket';
 
+function createBoard(roomCode) {
+  if (!socket) return <div className="empty"></div>;
+  let board = [];
+
+  function handleClick(e) {
+    console.log(e.target.id);
+    console.log(socket.id);
+    let data = { socketID: socket.id, roomCode: roomCode, move: e.target.id };
+    socket.emit('new-move', data);
+  }
   for (let i = 0; i < 3; i++) {
     let children = [];
     for (let j = 0; j < 3; j++) {
-      children.push(<td></td>);
+      children.push(
+        <span
+          onClick={(e) => handleClick(e)}
+          className="boardBlock"
+          id={String(i) + String(j)}
+        ></span>
+      );
     }
-    table.push(<tr>{children}</tr>);
+    board.push(<div key={i}>{children}</div>);
   }
-  return table;
+  return board;
 }
 
 export default function Game(props) {
   const urlParameters = useParams();
   const [playersConnected, setPlayerConnected] = useState(false);
-
+  // const socket = io.connect();
   useEffect(() => {
-    const socket = io.connect();
+    // socket = io.connect();
     socket.emit('join-room', urlParameters.roomCode);
     socket.on('event', (data) => console.log(data));
     socket.on('both-ready', (data) => {
@@ -31,6 +45,10 @@ export default function Game(props) {
     });
     return () => socket.close();
   }, []);
+  console.log('a');
+
+  // let [socket, setSocket] = useState(null);
+  // setSocket(io.connect());
 
   return playersConnected ? (
     <div className="main">
@@ -40,9 +58,7 @@ export default function Game(props) {
         <span style={{ float: 'right' }}>{props.p2}</span>
       </p>
       <p>Room Code: {urlParameters.roomCode}</p>
-      <div className="board">
-        <table>{createBoard()}</table>
-      </div>
+      <div className="board">{createBoard(urlParameters.roomCode)}</div>
     </div>
   ) : (
     <Loading />

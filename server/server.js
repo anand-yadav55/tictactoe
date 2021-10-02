@@ -33,6 +33,10 @@ io.on('connection', (socket) => {
   //   let p2Socket = playerQueue.shift();
   //   console.log(p2Socket);
 
+  socket.on('new-move', (data) => {
+    console.log(data.board, data.move, data.socketID, data.socket2);
+  });
+
   socket.on('join-room', (roomCode) => {
     if (roomCodes.includes(Number(roomCode))) {
       socket.join(roomCode);
@@ -45,6 +49,14 @@ io.on('connection', (socket) => {
 
     if (room.size == 2) {
       console.log('sending ready signal');
+      const data = new multiplayerModel({
+        roomCode: roomCode,
+        playerAName: 'Anand',
+        playerBName: 'Aman',
+        playerASocketId: room[0],
+        playerBSocketId: room[1],
+        noOfActivePlayers: 2,
+      });
       io.sockets.in(roomCode).emit('both-ready', roomCode);
     } else {
       console.log('length not 2');
@@ -78,6 +90,14 @@ io.on('connection', (socket) => {
   // }
   socket.on('disconnect', () => {
     console.log('disconnected', socket.id);
+
+    const index = playerQueue.indexOf(socket.id);
+    if (index > -1) {
+      playerQueue.splice(index, 1);
+    }
+
+    // array = [2, 9]
+    console.log(playerQueue);
   });
   socket.on('msg', (data) => {});
 });

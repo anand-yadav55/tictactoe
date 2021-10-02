@@ -5,7 +5,7 @@ import Game from '../Game';
 
 export default function StartGame() {
   const history = useHistory();
-  const [startGameLaod, setStartGameLoad] = useState(false);
+  // const [startGameLaod, setStartGameLoad] = useState(false);
   // useEffect(() => {}, []);
   return (
     <div className="box">
@@ -18,11 +18,11 @@ export default function StartGame() {
           let data = {
             playerName: e.target.playerName.value,
           };
-          setStartGameLoad(true);
+          // setStartGameLoad(true);
           axios.post('/api/createRoom', data).then((data) => {
             console.log(data.data.roomCode);
             const roomCode = data.data.roomCode;
-            setStartGameLoad(false);
+            // setStartGameLoad(false);
             history.push(`/game/${roomCode}`);
           });
         }}
@@ -31,7 +31,7 @@ export default function StartGame() {
         <input name="playerName" type="text" />
         <button type="submit">submit</button>
       </form>
-      ){/* } */}
+      {/* } */}
     </div>
   );
 }

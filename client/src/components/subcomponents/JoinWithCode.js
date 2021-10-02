@@ -13,7 +13,7 @@ export default function JoinWithCode() {
       roomCode: e.target.roomCode.value,
     };
     axios.post('/api/joinRoom', data).then((res) => {
-      console.log(res);
+      console.log(res.data);
       if (res.data.roomCode) {
         console.log('pushing');
         history.push(`/game/${res.data.roomCode}`);

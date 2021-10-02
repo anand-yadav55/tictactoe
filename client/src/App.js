@@ -11,30 +11,31 @@ import Game from './components/Game';
 import Loading from './components/Loading';
 
 function App() {
-  const [waiting, setWaiting] = useState(false);
-  useEffect(() => {
-    setWaiting(false);
-  }, []);
+  // const [waiting, setWaiting] = useState(false);
+  // useEffect(() => {
+  //   setWaiting(false);
+  // }, []);
+
   return (
     <div className="App">
       <Title />
-      {waiting ? (
-        <Loading message="PLEASE WAIT" />
-      ) : (
-        <Router>
-          <Switch>
-            <Route exact path="/join" component={JoinWithCode} />
-            <Route exact path="/start" component={StartGame} />
+      {/* {waiting ? ( */}
+      {/* <Loading message="PLEASE WAIT" /> */}
+      {/* ) : ( */}
+      <Router>
+        <Switch>
+          <Route exact path="/join" component={JoinWithCode} />
+          <Route exact path="/start" component={StartGame} />
 
-            <Route exact path="/game/:roomCode">
-              <Game p1="anand" p2="anan" roomCode={useParams.roomCode} />
-            </Route>
-            <Route path="/">
-              <Home />
-            </Route>
-          </Switch>
-        </Router>
-      )}
+          <Route exact path="/game/:roomCode">
+            <Game p1="anand" p2="anan" roomCode={useParams.roomCode} />
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </Router>
+      ){/* } */}
     </div>
   );
 }
