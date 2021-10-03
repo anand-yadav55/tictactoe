@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Home from './components/Home';
 
@@ -8,20 +7,11 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import StartGame from './components/subcomponents/startGame';
 import JoinWithCode from './components/subcomponents/JoinWithCode';
 import Game from './components/Game';
-import Loading from './components/Loading';
 
 function App() {
-  // const [waiting, setWaiting] = useState(false);
-  // useEffect(() => {
-  //   setWaiting(false);
-  // }, []);
-
   return (
     <div className="App">
       <Title />
-      {/* {waiting ? ( */}
-      {/* <Loading message="PLEASE WAIT" /> */}
-      {/* ) : ( */}
       <Router>
         <Switch>
           <Route exact path="/join" component={JoinWithCode} />
@@ -35,7 +25,6 @@ function App() {
           </Route>
         </Switch>
       </Router>
-      ){/* } */}
     </div>
   );
 }

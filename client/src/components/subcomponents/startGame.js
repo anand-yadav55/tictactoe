@@ -1,17 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import axios from 'axios';
-import Game from '../Game';
 
 export default function StartGame() {
   const history = useHistory();
-  // const [startGameLaod, setStartGameLoad] = useState(false);
-  // useEffect(() => {}, []);
   return (
     <div className="box">
-      {/* {startGameLaod ? (
-        <Game />
-      ) : ( */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -31,7 +24,6 @@ export default function StartGame() {
         <input name="playerName" type="text" />
         <button type="submit">submit</button>
       </form>
-      {/* } */}
     </div>
   );
 }

@@ -1,7 +1,4 @@
-import {
-  useHistory,
-  //  Redirect
-} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 export default function JoinWithCode() {
@@ -15,7 +12,6 @@ export default function JoinWithCode() {
     axios.post('/api/joinRoom', data).then((res) => {
       console.log(res.data);
       if (res.data.roomCode) {
-        console.log('pushing');
         history.push(`/game/${res.data.roomCode}`);
       } else if (res.data.msg) {
         console.log(res.data.msg);
