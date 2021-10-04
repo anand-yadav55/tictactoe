@@ -21,6 +21,7 @@ mongoose.connect(mongoURI, () => console.log('connected to db'));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static('client/build'));
 
 let playerQueue = [];
 let roomCodes = [];
@@ -241,3 +242,9 @@ app.post('/api/joinRoom', (req, res) => {
 
   res.send();
 });
+if (process.env.NODE_ENV == 'production') {
+  const path = require('path');
+  app.get('/*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../client', 'build', 'index.html'));
+  });
+}
