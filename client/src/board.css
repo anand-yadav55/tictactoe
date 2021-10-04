@@ -13,3 +13,11 @@ div {
   margin: 0;
   padding: 0;
 }
+.X {
+  background-image: url('../src/assets/X.png');
+  background-size: contain;
+}
+.O {
+  background-image: url('../src/assets/O.jpg');
+  background-size: contain;
+}

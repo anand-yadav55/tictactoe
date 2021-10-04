@@ -44,11 +44,16 @@ io.on('connection', (socket) => {
     multiplayerModel.findOne({ roomCode: roomCode }).then((doc) => {
       // console.log(doc.boardState, 'boardS');
       if (doc.boardState[moveIndex] != 'N') {
-        socket.emit('msg', 'This block is occupied');
+        socket.emit('event', 'This block is occupied');
         return;
       }
 
       let newBoardState = [];
+
+      if (doc.whoseMove != socketID) {
+        socket.emit('event', 'not your Move');
+        return;
+      }
 
       for (let i = 0; i < doc.boardState.length; i++) {
         if (i == moveIndex) {
@@ -60,10 +65,28 @@ io.on('connection', (socket) => {
         }
       }
 
+      var room = io.sockets.adapter.rooms.get(String(roomCode));
+      const iterator1 = room.values();
+
+      const playerASocketID = iterator1.next().value;
+      const playerBSocketID = iterator1.next().value;
+
+      let isX = true;
+      isX = socketID == playerASocketID ? true : false;
+
+      io.sockets
+        .in(roomCode)
+        .emit('boardUpdate', { newBoardState, moveIndex, isX });
       const isWin = require('./checkWinner').isWin(newBoardState);
 
+      const alterChance =
+        doc.whoseMove === playerASocketID ? playerBSocketID : playerASocketID;
+
       multiplayerModel
-        .findOneAndUpdate({ roomCode: roomCode }, { boardState: newBoardState })
+        .findOneAndUpdate(
+          { roomCode: roomCode },
+          { boardState: newBoardState, whoseMove: alterChance }
+        )
         .then((doc) => {
           // console.log(doc);
         })
@@ -71,18 +94,19 @@ io.on('connection', (socket) => {
           console.log(err);
         });
 
+      // var room = io.sockets.adapter.rooms.get(String(roomCode));
+      // const iterator1 = room.values();
+
+      // const playerASocketID = iterator1.next().value;
+      // const playerBSocketID = iterator1.next().value;
       if (isWin) {
         console.log(isWin);
         // if (socket.id == isWin) socket.emit('game-end', 'You won');
-
-        var room = io.sockets.adapter.rooms.get(String(roomCode));
-        const iterator1 = room.values();
-
-        const playerASocketID = iterator1.next().value;
-        const playerBSocketID = iterator1.next().value;
-
+        if (isWin == 'DRAW') {
+          io.sockets.in(roomCode).emit('result', 'DRAW');
+        }
         //sending game end events
-        if (playerASocketID == isWin) {
+        else if (playerASocketID == isWin) {
           io.to(isWin).emit('result', 'You Won');
           io.to(playerBSocketID).emit('result', 'You Lost');
         } else {
@@ -97,8 +121,6 @@ io.on('connection', (socket) => {
           playerBSocketID: playerBSocketID,
         });
       }
-
-      io.sockets.in(roomCode).emit('boardUpdate', { newBoardState });
     });
   });
 
@@ -132,6 +154,7 @@ io.on('connection', (socket) => {
           playerASocketId: playerASocketID,
           playerBSocketId: playerBSocketID,
           boardState: boardState,
+          whoseMove: playerASocketID,
         },
         { new: true },
         (err, doc) => {
@@ -144,9 +167,6 @@ io.on('connection', (socket) => {
       );
 
       io.sockets.in(roomCode).emit('both-ready', roomCode);
-
-      // let isX = true;
-      // isX = socket.id == playerASocketID ? true : false;
 
       io.sockets.to(playerASocketID).emit('move-symbol', true);
       io.sockets.to(playerBSocketID).emit('move-symbol', false);

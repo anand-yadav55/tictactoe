@@ -65,9 +65,18 @@ function checkDiagonal(boardState) {
   }
   return false;
 }
+function isDraw(boardState) {
+  let flag = true;
+
+  for (let i = 0; i < 9; i++) {
+    if (boardState[i] == 'N') flag = false;
+  }
+  return flag;
+}
 
 function isWin(boardState) {
-  if (checkDiagonal(boardState)) return checkDiagonal(boardState);
+  if (isDraw(boardState)) return 'DRAW';
+  else if (checkDiagonal(boardState)) return checkDiagonal(boardState);
   else if (checkHorVert(boardState)) return checkHorVert(boardState);
   else return false;
 }

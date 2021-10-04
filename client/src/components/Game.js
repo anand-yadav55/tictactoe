@@ -5,14 +5,17 @@ import Loading from './Loading';
 
 import { socket } from '../service/socket';
 
-function createBoard(roomCode, isX) {
+function createBoard(roomCode, gameBoard, setGameBoard, isX) {
   if (!socket) return <div className="empty"></div>;
   let board = [];
 
   function handleClick(e) {
     let data = { socketID: socket.id, roomCode: roomCode, move: e.target.id };
     socket.emit('new-move', data);
-    e.target.classList.add(isX ? 'X' : 'O');
+    // if (gameBoard[e.target.id]) {
+    //   e.target.classList.add(isX ? 'X' : 'O');
+    //   e.target.classList.remove('N');
+    // }
   }
   let k = 0;
   for (let i = 0; i < 3; i++) {
@@ -24,7 +27,7 @@ function createBoard(roomCode, isX) {
           onClick={(e) => {
             handleClick(e);
           }}
-          className={`boardBlock`}
+          className={`boardBlock ${gameBoard[k]}`}
           id={k++}
         ></span>
       );
@@ -33,12 +36,20 @@ function createBoard(roomCode, isX) {
   }
   return board;
 }
+function updateBoardOnMove(move, isX) {
+  const moveBlock = document.getElementById(move);
+  moveBlock.classList.add(isX ? 'X' : 'O');
+  console.log(move, isX);
+}
 
 export default function Game(props) {
   const urlParameters = useParams();
   const [playersConnected, setPlayerConnected] = useState(false);
   const [result, setResult] = useState('');
-  const [board, setBoard] = useState([]);
+
+  const defaultBoard = ['N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'];
+  const [board, setBoard] = useState(defaultBoard);
+
   const [isX, setIsX] = useState(true);
 
   useEffect(() => {
@@ -61,12 +72,13 @@ export default function Game(props) {
       setPlayerConnected(true);
     });
 
+    socket.on('move-symbol', (data) => setIsX(data));
+
     socket.on('boardUpdate', (data) => {
       console.log(data);
-      setBoard(data);
+      setBoard(data.newBoardState);
+      updateBoardOnMove(data.moveIndex, data.isX);
     });
-
-    socket.on('move-symbol', (data) => setIsX(data));
 
     return () => socket.close();
   }, []);
@@ -80,7 +92,9 @@ export default function Game(props) {
         <span style={{ float: 'right' }}>{props.p2}</span>
       </p>
       <p>Room Code: {urlParameters.roomCode}</p>
-      <div className="board">{createBoard(urlParameters.roomCode, isX)}</div>
+      <div className="board">
+        {createBoard(urlParameters.roomCode, board, setBoard, isX)}
+      </div>
     </div>
   ) : (
     <Loading message="Waiting For Another Player" />

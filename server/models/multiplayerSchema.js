@@ -8,6 +8,7 @@ const multiplayerSchema = new mongoose.Schema({
   playerBSocketId: String,
   noOfActivePlayers: Number,
   boardState: Array,
+  whoseMove: String,
 });
 
 const multiplayerModel = mongoose.model('multiplayerModel', multiplayerSchema);
