@@ -30,7 +30,7 @@ const { multiplayerModel } = require('./models/multiplayerSchema');
 io.on('connection', (socket) => {
   // console.log('a user connected', socket.id);
   playerQueue.push(socket.id);
-  // console.log(playerQueue);
+  console.log(playerQueue);
 
   //on new move on board
   socket.on('new-move', (data) => {
@@ -130,7 +130,7 @@ io.on('connection', (socket) => {
     if (roomCodes.includes(Number(roomCode))) {
       socket.join(roomCode);
     } else {
-      return socket.to(socket.id).emit('no-room-found');
+      return socket.to(socket.id).emit('event', 'no-room-found');
     }
 
     var room = io.sockets.adapter.rooms.get(String(roomCode));
@@ -201,7 +201,7 @@ io.on('connection', (socket) => {
       playerQueue.splice(index, 1);
     }
 
-    // console.log(playerQueue);
+    console.log(playerQueue);
   });
 });
 

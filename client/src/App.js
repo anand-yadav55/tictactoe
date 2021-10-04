@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import StartGame from './components/subcomponents/startGame';
 import JoinWithCode from './components/subcomponents/JoinWithCode';
 import Game from './components/Game';
+import { socket } from './service/socket';
 
 function App() {
   return (
@@ -18,7 +19,12 @@ function App() {
           <Route exact path="/start" component={StartGame} />
 
           <Route exact path="/game/:roomCode">
-            <Game p1="anand" p2="anan" roomCode={useParams.roomCode} />
+            <Game
+              p1="anand"
+              p2="anan"
+              socket={socket}
+              roomCode={useParams.roomCode}
+            />
           </Route>
           <Route path="/">
             <Home />

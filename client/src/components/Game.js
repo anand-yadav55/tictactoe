@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import '../board.css';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import Loading from './Loading';
+import MessageModal from './subcomponents/MessageModal';
 
-import { socket } from '../service/socket';
+// import { socket } from '../service/socket';
 
-function createBoard(roomCode, gameBoard, setGameBoard, isX) {
+function createBoard(roomCode, gameBoard, setGameBoard, isX, socket) {
   if (!socket) return <div className="empty"></div>;
   let board = [];
 
@@ -51,15 +52,30 @@ export default function Game(props) {
   const [board, setBoard] = useState(defaultBoard);
 
   const [isX, setIsX] = useState(true);
+  const [msg, setMsg] = useState('');
+  const [showReset, setShowReset] = useState(false);
+
+  const socket = props.socket;
+  const history = useHistory();
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMsg('');
+    }, 3000);
+  }, [msg]);
 
   useEffect(() => {
     socket.emit('join-room', urlParameters.roomCode);
 
-    socket.on('event', (data) => console.log(data));
+    socket.on('event', (data) => {
+      console.log(data);
+      setMsg(data);
+    });
 
     socket.on('result', (data) => {
       console.log(data);
       setResult(data);
+      setShowReset(true);
     });
 
     socket.on('game-end', (data) => {
@@ -86,17 +102,32 @@ export default function Game(props) {
   return playersConnected ? (
     <div className="main">
       <h1>Game</h1>
-      <h3>{result}</h3>
+      <h3 className="yourSymbol">Your Symbol: {isX ? 'X' : 'O'}</h3>
+      {result ? <h3 className="result">{result}</h3> : <></>}
+      {showReset ? (
+        <button
+          onClick={() => {
+            // history.push('/start')
+          }}
+        >
+          Restart
+        </button>
+      ) : (
+        <></>
+      )}
       <p>
         <span style={{ float: 'left' }}>{props.p1}</span>
         <span style={{ float: 'right' }}>{props.p2}</span>
       </p>
       <p>Room Code: {urlParameters.roomCode}</p>
       <div className="board">
-        {createBoard(urlParameters.roomCode, board, setBoard, isX)}
+        {createBoard(urlParameters.roomCode, board, setBoard, isX, socket)}
       </div>
+      <MessageModal msg={msg} setMsg={setMsg} />
     </div>
   ) : (
-    <Loading message="Waiting For Another Player" />
+    <Loading
+      message={`Waiting For Another Player,Ask your frient to join with RoomCode: ${urlParameters.roomCode}`}
+    />
   );
 }
